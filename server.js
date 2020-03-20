@@ -43,3 +43,69 @@ const startCMS = async () => {
       break;
   }
 };
+
+function department() {
+  let options = ["Update", "Create"];
+  let choice = await inquirer.prompt([
+    {
+      type: "list",
+      name: "confirm",
+      message:
+        "Would you like to edit an existing department or create a new one?",
+      choices: options
+    }
+  ]);
+  switch (choice.confirm){
+    case (options[0]):
+      update(department);
+      break;
+    case (options[1]):
+      create(department);
+      break;
+  }
+}
+
+function role() {
+  let options = ["Update", "Create"];
+  let choice = await inquirer.prompt([
+    {
+      type: "list",
+      name: "confirm",
+      message: "Would you like to edit an existing role or create a new one?",
+      choices: options
+    }
+  ]);
+  switch (choice.confirm){
+    case (options[0]):
+      update(role);
+      break;
+    case (options[1]):
+      create(role);
+      break;
+  }
+}
+
+function employee() {
+  let options = ["Update", "Create"];
+  let choice = await inquirer.prompt([
+    {
+      type: "list",
+      name: "confirm",
+      message:
+        "Would you like to edit an existing employee or create a new one?",
+      choices: options
+    }
+  ]);
+  switch (choice.confirm){
+    case (options[0]):
+      update(employee);
+      break;
+    case (options[1]):
+      create(employee);
+      break;
+  }
+}
+
+function update(props) {}
+
+function create(props) {}
