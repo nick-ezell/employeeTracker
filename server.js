@@ -46,7 +46,7 @@ const startCMS = async () => {
 
 function department() {
   let options = ["Update", "Create"];
-  let choice = await inquirer.prompt([
+  let choice = inquirer.prompt([
     {
       type: "list",
       name: "confirm",
@@ -55,19 +55,52 @@ function department() {
       choices: options
     }
   ]);
-  switch (choice.confirm){
-    case (options[0]):
-      update(department);
+  switch (choice.confirm) {
+    case options[0]:
+      connection.query("SELECT * FROM department", function(err, result) {
+        let tableArr = [];
+        for (let row of result) {
+          tableArr.push(result[row]);
+        }
+        let chosenDept = inquirer.prompt([
+          {
+            type: "list",
+            name: "nameChange",
+            message: "Which department would you like to update?",
+            choices: tableArr
+          },
+          {
+            type: "list",
+            name: "update",
+            message: "What would you like to update?",
+            choices: ["name"]
+          },
+          {
+            type: "input",
+            name: "newName",
+            message: "Please enter a new value for the selected column."
+          }
+        ]);
+        let query =
+          `SELECT * FROM department WHERE ${chosenDept.update} = ${chosenDept.nameChange}` +
+          `UPDATE department SET ${chosenDept.update} = ${chosenDept.newName}`;
+        connection.query(query, function(err, result) {
+          connection.end;
+        });
+        if (err) {
+          throw err;
+        }
+        connection.end;
+      });
       break;
-    case (options[1]):
-      create(department);
+    case options[1]:
       break;
   }
 }
 
 function role() {
   let options = ["Update", "Create"];
-  let choice = await inquirer.prompt([
+  let choice = inquirer.prompt([
     {
       type: "list",
       name: "confirm",
@@ -75,19 +108,17 @@ function role() {
       choices: options
     }
   ]);
-  switch (choice.confirm){
-    case (options[0]):
-      update(role);
+  switch (choice.confirm) {
+    case options[0]:
       break;
-    case (options[1]):
-      create(role);
+    case options[1]:
       break;
   }
 }
 
 function employee() {
   let options = ["Update", "Create"];
-  let choice = await inquirer.prompt([
+  let choice = inquirer.prompt([
     {
       type: "list",
       name: "confirm",
@@ -96,16 +127,16 @@ function employee() {
       choices: options
     }
   ]);
-  switch (choice.confirm){
-    case (options[0]):
-      update(employee);
+  switch (choice.confirm) {
+    case options[0]:
       break;
-    case (options[1]):
-      create(employee);
+    case options[1]:
       break;
   }
 }
 
-function update(props) {}
+// function update(props) {}
 
-function create(props) {}
+// function create(props) {
+//   connection.query(`INSERT INTO ${props}`)
+// }
