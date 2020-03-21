@@ -44,9 +44,11 @@ const startCMS = async () => {
   }
 };
 
-function department() {
+let deptArr = [];
+
+async function department() {
   let options = ["Update", "Create"];
-  let choice = inquirer.prompt([
+  let choice = await inquirer.prompt([
     {
       type: "list",
       name: "confirm",
@@ -56,46 +58,62 @@ function department() {
     }
   ]);
   switch (choice.confirm) {
-    case options[0]:
-      connection.query("SELECT * FROM department", function(err, result) {
-        let tableArr = [];
+    case "Update":
+      connection.query("SELECT * FROM department", async function(err, result) {
         for (let row of result) {
-          tableArr.push(result[row]);
+          deptArr.push(result[row]);
         }
-        let chosenDept = inquirer.prompt([
-          {
-            type: "list",
-            name: "nameChange",
-            message: "Which department would you like to update?",
-            choices: tableArr
-          },
-          {
-            type: "list",
-            name: "update",
-            message: "What would you like to update?",
-            choices: ["name"]
-          },
-          {
-            type: "input",
-            name: "newName",
-            message: "Please enter a new value for the selected column."
-          }
-        ]);
-        let query =
-          `SELECT * FROM department WHERE ${chosenDept.update} = ${chosenDept.nameChange}` +
-          `UPDATE department SET ${chosenDept.update} = ${chosenDept.newName}`;
-        connection.query(query, function(err, result) {
-          connection.end;
-        });
         if (err) {
           throw err;
         }
         connection.end;
       });
+      let chosenDept = await inquirer.prompt([
+        {
+          type: "list",
+          name: "nameChange",
+          message: "Which department would you like to update?",
+          choices: deptArr
+        },
+        {
+          type: "list",
+          name: "update",
+          message: "What would you like to update?",
+          choices: ["name"]
+        },
+        {
+          type: "input",
+          name: "newName",
+          message: "Please enter a new value for the selected column."
+        }
+      ]);
+      let query =
+        `SELECT * FROM department WHERE ${chosenDept.update} = ${chosenDept.nameChange}` +
+        `UPDATE department SET ${chosenDept.update} = ${chosenDept.newName}`;
+      connection.query(query, function(err, result) {
+        connection.end;
+      });
+
       break;
-    case options[1]:
+    case "Create":
+      let createDept = await inquirer.prompt({
+        type: "input",
+        message: "What would you like to name the new department?",
+        name: "newDept"
+      });
+      connection.query(
+        `INSERT INTO department (name) VALUE ("${createDept.newDept}")`,
+        function(err, result) {
+          if (err) {
+            throw err;
+          }
+          connection.end;
+        }
+      );
+
       break;
   }
+  startCMS();
 }
 
 function role() {
